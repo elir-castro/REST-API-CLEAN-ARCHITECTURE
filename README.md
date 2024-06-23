@@ -11,7 +11,7 @@ git clone https://github.com/whocastr/REST-API-CLEAN-ARCHITECTURE.git
 
 ## Usage
 
-```c#
+```bash
 cd ...\REST-API-CLEAN-ARCHITECTURE\BuberDinner
 
 dotnet watch run --project .\BuberDinner.Api\
