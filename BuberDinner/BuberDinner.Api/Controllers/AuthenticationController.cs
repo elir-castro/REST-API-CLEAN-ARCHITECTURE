@@ -1,4 +1,6 @@
 ﻿using BuberDinner.Application.Services.Authentication;
+using BuberDinner.Application.Services.Authentication.Commands;
+using BuberDinner.Application.Services.Authentication.Common;
 using BuberDinner.Contracts.Authentication;
 using BuberDinner.Domain.Common.Errors;
 using ErrorOr;
@@ -10,18 +12,21 @@ namespace BuberDinner.Api.Controllers
     [Route("auth")]
     public class AuthenticationController : ApiController
     {
-        private readonly IAuthenticationService _authenticationService;
+        private readonly IAuthenticationCommandService _authenticationCommandService;
+        private readonly IAuthenticationQueryService _authenticationQueryService;
 
-        public AuthenticationController(IAuthenticationService authenticationService)
+
+        public AuthenticationController(IAuthenticationCommandService authenticationCommandService, IAuthenticationQueryService authenticationQueryService)
         {
-            _authenticationService = authenticationService;
+            _authenticationCommandService = authenticationCommandService;
+            _authenticationQueryService = authenticationQueryService;
         }
 
         [HttpPost("register")]
 
         public IActionResult Register(RegisterRequest request)
         {
-            ErrorOr<AuthenticationResult> authResult = _authenticationService.Register(request.FirstName, request.LastName, request.Email, request.Password);
+            ErrorOr<AuthenticationResult> authResult = _authenticationCommandService.Register(request.FirstName, request.LastName, request.Email, request.Password);
 
             return authResult.Match(
                 result => Ok(MapAuthResult(result)),
@@ -32,7 +37,7 @@ namespace BuberDinner.Api.Controllers
 
         public IActionResult Login(LoginRequest request)
         {
-            var authResult = _authenticationService.Login(request.Email, request.Password);
+            var authResult = _authenticationQueryService.Login(request.Email, request.Password);
 
             if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidCredentials)
             {
